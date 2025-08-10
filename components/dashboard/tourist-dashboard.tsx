@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Users, DollarSign, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation' // Importamos useRouter para la redirección
 
+// Interfaz para la reserva
 interface Booking {
   id: string
   booking_date: string
@@ -30,7 +32,7 @@ interface Booking {
   }
 }
 
-export default function TouristDashboard({ user, profile }: { user: any, profile: any }) {
+export default function TouristDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
@@ -39,12 +41,55 @@ export default function TouristDashboard({ user, profile }: { user: any, profile
     pendingBookings: 0,
     totalSpent: 0
   })
+  const [user, setUser] = useState<any>(null) // Nuevo estado para el usuario
+  const [profile, setProfile] = useState<any>(null) // Nuevo estado para el perfil
+  const router = useRouter() // Inicializa el router
 
+  // Este useEffect maneja la autenticación y carga inicial de datos
   useEffect(() => {
-    fetchBookings()
-  }, [user.id])
+    const supabase = createClient()
+    
+    // Escucha los cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Si no hay sesión, redirige al usuario.
+      if (!session) {
+        setUser(null)
+        setProfile(null)
+        setLoading(false)
+        router.push('/login')
+      } else {
+        // Si hay una sesión, establece el usuario y procede a cargar el perfil y las reservas
+        setUser(session.user)
+        fetchProfile(session.user.id)
+        fetchBookings(session.user.id)
+      }
+    })
 
-  const fetchBookings = async () => {
+    // Limpia el listener cuando el componente se desmonta
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [router])
+
+  // Función para obtener el perfil del usuario
+  const fetchProfile = async (userId: string) => {
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (error) {
+      console.error("Error fetching profile:", error)
+    } else {
+      setProfile(data)
+    }
+  }
+
+  // Función para obtener las reservas. Ahora toma el userId como argumento.
+  const fetchBookings = async (userId: string) => {
+    setLoading(true)
     const supabase = createClient()
     
     const { data, error } = await supabase
@@ -63,13 +108,13 @@ export default function TouristDashboard({ user, profile }: { user: any, profile
           )
         )
       `)
-      .eq('tourist_id', user.id)
+      .eq('tourist_id', userId) // Usamos el userId del listener
       .order('created_at', { ascending: false })
 
     if (error) {
       console.error('Error fetching bookings:', error)
     } else if (data) {
-      setBookings(data)
+      setBookings(data as Booking[])
       setStats({
         totalBookings: data.length,
         confirmedBookings: data.filter(booking => booking.status === 'confirmed').length,
@@ -95,7 +140,7 @@ export default function TouristDashboard({ user, profile }: { user: any, profile
     }
   }
 
-  if (loading) {
+  if (loading || !user || !profile) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse space-y-4">

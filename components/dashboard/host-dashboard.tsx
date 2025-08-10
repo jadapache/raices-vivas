@@ -8,7 +8,9 @@ import { Plus, Eye, Edit, Calendar, Users, DollarSign } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useI18n } from '@/lib/i18n/context'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation' // Importamos useRouter para la redirección
 
+// Interfaz para la experiencia
 interface Experience {
   id: string
   title: string
@@ -19,6 +21,7 @@ interface Experience {
   created_at: string
 }
 
+// Interfaz para la reserva
 interface Booking {
   id: string
   booking_date: string
@@ -31,7 +34,7 @@ interface Booking {
   }
 }
 
-export default function HostDashboard({ user, profile }: { user: any, profile: any }) {
+export default function HostDashboard() {
   const [experiences, setExperiences] = useState<Experience[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
@@ -41,33 +44,77 @@ export default function HostDashboard({ user, profile }: { user: any, profile: a
     pendingBookings: 0,
     totalRevenue: 0
   })
+  const [user, setUser] = useState<any>(null) // Nuevo estado para el usuario
+  const [profile, setProfile] = useState<any>(null) // Nuevo estado para el perfil
   const { t } = useI18n()
+  const router = useRouter() // Inicializa el router
 
+  // Este useEffect es la clave para manejar la sesión correctamente
   useEffect(() => {
-    fetchData()
-  }, [user.id])
+    const supabase = createClient()
+    
+    // Escucha los cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Si no hay sesión, redirige al usuario.
+      if (!session) {
+        setUser(null)
+        setProfile(null)
+        router.push('/login') 
+      } else {
+        // Si hay una sesión, establece el usuario y procede a cargar el perfil y los datos
+        setUser(session.user)
+        fetchProfile(session.user.id)
+        fetchData(session.user.id)
+      }
+    })
 
-  const fetchData = async () => {
+    // Limpia el listener cuando el componente se desmonta
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [router])
+
+  // Función para obtener el perfil del usuario
+  const fetchProfile = async (userId: string) => {
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (error) {
+      console.error("Error fetching profile:", error)
+    } else {
+      setProfile(data)
+    }
+  }
+
+  // Función para obtener los datos. Ahora toma el userId como argumento.
+  const fetchData = async (userId: string) => {
+    setLoading(true)
     const supabase = createClient()
     
     // Fetch experiences
-    const { data: experiencesData } = await supabase
+    const { data: experiencesData, error: experiencesError } = await supabase
       .from('experiences')
       .select('*')
-      .eq('host_id', user.id)
+      .eq('host_id', userId) // Usamos el userId del listener
       .order('created_at', { ascending: false })
 
     // Fetch bookings for host's experiences
-    const { data: bookingsData } = await supabase
+    const { data: bookingsData, error: bookingsError } = await supabase
       .from('bookings')
       .select(`
         *,
         experiences!inner(title, host_id)
       `)
-      .eq('experiences.host_id', user.id)
+      .eq('experiences.host_id', userId) // Usamos el userId del listener
       .order('created_at', { ascending: false })
 
-    if (experiencesData) {
+    if (experiencesError) {
+      console.error('Error fetching experiences:', experiencesError)
+    } else if (experiencesData) {
       setExperiences(experiencesData)
       setStats(prev => ({
         ...prev,
@@ -76,8 +123,10 @@ export default function HostDashboard({ user, profile }: { user: any, profile: a
       }))
     }
 
-    if (bookingsData) {
-      setBookings(bookingsData)
+    if (bookingsError) {
+      console.error('Error fetching bookings:', bookingsError)
+    } else if (bookingsData) {
+      setBookings(bookingsData as Booking[])
       setStats(prev => ({
         ...prev,
         pendingBookings: bookingsData.filter(booking => booking.status === 'pending').length,
@@ -116,7 +165,7 @@ export default function HostDashboard({ user, profile }: { user: any, profile: a
     }
   }
 
-  if (loading) {
+  if (loading || !user || !profile) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse space-y-4">
@@ -139,7 +188,7 @@ export default function HostDashboard({ user, profile }: { user: any, profile: a
           {t('dashboard.welcome')}, {profile?.full_name || 'Usuario'}
         </h1>
         <p className="text-gray-600">
-           {t('dashboard.hostPanel')}{profile?.community_name ? ` - ${profile.community_name}` : ''}
+          {t('dashboard.hostPanel')}{profile?.community_name ? ` - ${profile.community_name}` : ''}
         </p>
       </div>
 

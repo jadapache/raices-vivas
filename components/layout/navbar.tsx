@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { UserAvatar  } from "@/components/ui/user-avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,160 +17,43 @@ import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import { LanguageSwitch } from '@/components/ui/language-switch'
 import { useI18n } from '@/lib/i18n/context'
+import { useAuth } from '@/components/auth/auth-provider' // Importamos el nuevo hook de autenticación
+
+// Definimos una interfaz para el perfil para una mejor tipificación
+interface Profile {
+  id: string;
+  full_name: string;
+  role: 'host' | 'coordinator' | 'tourist' | 'unknown';
+  community_name?: string;
+  avatar_url?: string;
+}
 
 export default function Navbar() {
-  const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
+  // Obtenemos el estado de autenticación desde el contexto
+  const { user, profile, loading, error } = useAuth(); 
+  
   const [signingOut, setSigningOut] = useState(false)
-  const [sessionError, setSessionError] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
   const { t } = useI18n()
-
-  useEffect(() => {
-    let mounted = true
-    let authSubscription: any = null
-    
-    const loadUser = async () => {
-      try {
-        const supabase = createClient()
-        
-        // Get initial session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError)
-          if (mounted) {
-            setSessionError(true)
-            setLoading(false)
-          }
-          return
-        }
-
-        if (!mounted) return
-        
-        if (session?.user) {
-          console.log('Initial session found:', session.user.id)
-          setUser(session.user)
-          
-          // Fetch profile
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
-          
-          if (mounted) {
-            if (profileError) {
-              console.error('Profile error:', profileError)
-              setProfile(null)
-            } else {
-              setProfile(profile)
-            }
-            setLoading(false)
-          }
-        } else {
-          console.log('No initial session found')
-          if (mounted) {
-            setUser(null)
-            setProfile(null)
-            setLoading(false)
-          }
-        }
-      } catch (error) {
-        console.error('Error loading user:', error)
-        if (mounted) {
-          setUser(null)
-          setProfile(null)
-          setSessionError(true)
-          setLoading(false)
-        }
-      }
-    }
-
-    // Initial load
-    loadUser()
-
-    // Listen for auth changes
-    const supabase = createClient()
-    authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return
-      
-      console.log('Auth state changed:', event, session?.user?.id || 'no user')
-      
-      // Handle different auth events
-      switch (event) {
-        case 'INITIAL_SESSION':
-          // Already handled in loadUser()
-          break
-          
-        case 'SIGNED_IN':
-          if (session?.user) {
-            setUser(session.user)
-            setSessionError(false)
-            
-            // Fetch profile
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single()
-            
-            setProfile(profile)
-            setLoading(false)
-          }
-          break
-          
-        case 'SIGNED_OUT':
-          setUser(null)
-          setProfile(null)
-          setSessionError(false)
-          setLoading(false)
-          break
-          
-        case 'TOKEN_REFRESHED':
-          console.log('Token refreshed')
-          break
-          
-        default:
-          console.log('Unhandled auth event:', event)
-      }
-    })
-
-    return () => {
-      mounted = false
-      if (authSubscription?.data?.subscription) {
-        authSubscription.data.subscription.unsubscribe()
-      }
-    }
-  }, [])
+  const supabase = createClient()
 
   const handleSignOut = async () => {
     setSigningOut(true)
     try {
-      const supabase = createClient()
       const { error } = await supabase.auth.signOut()
-      
       if (error) {
-        console.error('Signout error:', error)
         throw error
       }
-      
-      // Clear local state immediately
-      setUser(null)
-      setProfile(null)
-      setSessionError(false)
       
       toast({
         title: t('common.success'),
         description: t('nav.signOut')
       })
       
-      // Redirect to home
-      router.push('/')
-      
+      // Forzamos un refresco completo para limpiar el estado de toda la app
+      window.location.href = '/'
     } catch (error) {
       console.error('Signout error:', error)
       toast({
@@ -178,8 +61,6 @@ export default function Navbar() {
         description: t('errors.sessionError'),
         variant: "destructive"
       })
-      
-      // Force logout by clearing everything and redirecting
       handleForceLogout()
     } finally {
       setSigningOut(false)
@@ -187,46 +68,28 @@ export default function Navbar() {
   }
 
   const handleForceLogout = () => {
-    // Clear all possible auth data
+    // Limpiamos todo el estado de manera agresiva y recargamos
     localStorage.clear()
     sessionStorage.clear()
-    
-    // Clear state
-    setUser(null)
-    setProfile(null)
-    setSessionError(false)
-    setLoading(false)
-    
-    // Force page reload to clear any cached state
     window.location.href = '/'
   }
 
-  const handleRetryAuth = () => {
-    setLoading(true)
-    setSessionError(false)
-    window.location.reload()
-  }
-
-  // Show error state if there's a session error
-  if (sessionError) {
+  // Ahora, el Navbar renderiza en base a los estados del contexto.
+  // El error de sesión ahora se gestiona con el estado 'error' del AuthProvider.
+  if (error) {
     return (
       <nav className="border-b bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2">
-                <MapPin className="h-8 w-8 text-blue-600" />
-                <span className="text-xl font-bold text-gray-900">Raíces Vivas</span>
-              </Link>
-            </div>
+          <div className="flex justify-between h-16 items-center">
+            <Link href="/" className="flex items-center space-x-2">
+              <MapPin className="h-8 w-8 text-blue-600" />
+              <span className="text-xl font-bold text-gray-900">Raíces Vivas</span>
+            </Link>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-red-600">
                 <AlertTriangle className="h-4 w-4" />
                 <span className="text-sm">{t('errors.sessionError')}</span>
               </div>
-              <Button variant="outline" size="sm" onClick={handleRetryAuth}>
-                {t('common.retry')}
-              </Button>
               <Button variant="outline" size="sm" onClick={handleForceLogout}>
                 {t('errors.clearSession')}
               </Button>
@@ -248,10 +111,10 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             <LanguageSwitch />
             
+            {/* El estado de carga se obtiene directamente del contexto */}
             {loading ? (
               <div className="flex items-center space-x-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -269,12 +132,14 @@ export default function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} alt={profile?.full_name} />
-                      <AvatarFallback>
-                        {profile?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="flex items-center">
+                      {profile ? (
+                        <UserAvatar profile={profile} />
+                      ) : (
+                        // Muestra un componente por defecto si no hay perfil
+                        <UserAvatar profile={null} />
+                      )}
+                    </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -333,7 +198,6 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
             <LanguageSwitch />
             <Button
@@ -346,7 +210,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1">
