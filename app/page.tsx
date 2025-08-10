@@ -6,9 +6,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CloudOffIcon, MapPin, Users, MessageSquareMoreIcon, Star } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/context'
 import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+
+interface Experience {
+  id: string;
+  title: string;
+  short_description: string;
+  price_per_person: number;
+  location: string;
+  images: string[];
+}
+
+
 
 export default function HomePage() {
   const { t } = useI18n()
+  const [experiences, setExperiences] = useState<Experience[]>([])
+
+
+   useEffect(() => {
+      fetchExperiences()
+    }, [])
+
+  const fetchExperiences = async () => {
+    const supabase = createClient()
+    const { data, error } = await supabase
+          .from('experiences')
+          .select('id, title, short_description, price_per_person, location, images')
+          .eq('status', 'approved') 
+          .order('created_at', { ascending: false })
+          .limit(3); 
+    
+        if (error) {
+          console.error('Error fetching experiences:', error)
+        } else {
+          setExperiences(data || [])
+      }
+   }
+
+
 
   return (
     <div className="min-h-screen">
@@ -26,7 +63,7 @@ export default function HomePage() {
               <Button size="lg" asChild className="bg-white text-blue-600 hover:bg-gray-100">
                 <Link href="/experiences">{t('home.exploreExperiences')}</Link>
               </Button>
-              <Button size="lg" variant="secondary" asChild className="border-white text-white hover:bg-white hover:text-blue-600">
+              <Button size="lg" variant="secondary" asChild className="bg-gray-800 border-gray-800 text-white hover:bg-gray-700 hover:text-white">
                 <Link href="/auth">{t('home.joinUs')}</Link>
               </Button>
             </div>
@@ -97,40 +134,41 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {t('home.featuredExperiences')}
+              {t('home.recentAddedExperiences')}
             </h2>
             <p className="text-lg sm:text-xl text-gray-600">
-              {t('home.featuredSubtitle')}
+              {t('home.recentAddedSubtittle')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="overflow-hidden">
+            {experiences?.map((experience) => (
+              <Card key={experience.id} className="overflow-hidden">
                 <div className="relative h-48">
                   <Image
-                    src={`/vibrant-cultural-celebration.png?height=200&width=400&query=cultural experience ${i}`}
-                    alt={`Experience ${i}`}
+                    src={experience.images?.[0] || '/default-placeholder.png'} // Use the first image or a placeholder
+                    alt={experience.title}
                     fill
                     className="object-cover"
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle>Pasadía Cascada Silvania</CardTitle>
-                  <CardDescription>No toda la riqueza del Putumayo es de color negro.</CardDescription>
+                  <CardTitle>{experience.title}</CardTitle>
+                  <CardDescription>{experience.short_description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1">
+                      {/* You can add a logic to show real ratings if you have them */}
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">4.9</span>
-                      <span className="text-sm text-gray-500">(24 reseñas)</span>
+                      <span className="text-sm font-medium">--</span>
+                      <span className="text-sm text-gray-500">(0 reseñas)</span>
                     </div>
-                    <div className="text-lg font-bold">$45.000</div>
+                    <div className="text-lg font-bold">${experience.price_per_person.toLocaleString()}</div>
                   </div>
                   <div className="flex items-center text-sm text-gray-500 mt-2">
                     <MapPin className="h-4 w-4 mr-1" />
-                    Orito, Putumayo
+                    {experience.location}
                   </div>
                 </CardContent>
               </Card>
@@ -158,7 +196,7 @@ export default function HomePage() {
             <Button size="lg" variant="secondary" asChild>
               <Link href="/experiences">{t('home.exploreExperiences')}</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="border-white text-white hover:bg-white hover:text-blue-600">
+            <Button size="lg" variant="outline" asChild className="bg-gray-800 border-gray-800 text-white hover:bg-gray-700 hover:text-white">
               <Link href="/auth">{t('home.joinNow')}</Link>
             </Button>
           </div>
