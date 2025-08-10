@@ -1,3 +1,5 @@
+"use client" // Añade esta línea al principio del archivo
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -26,6 +28,7 @@ export default function NotFound() {
                 Ir al inicio
               </Link>
             </Button>
+            {/* Esta es la línea que ahora funciona */}
             <Button variant="outline" onClick={() => window.history.back()}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver
