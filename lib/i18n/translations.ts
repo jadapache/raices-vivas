@@ -27,8 +27,8 @@ export const translations = {
       selfControlDesc: 'Gestión directa por parte de las comunidades',
       trust: 'Confianza',
       trustDesc: 'Siéntete tranquilo con las reseñas reales de viajeros y validación de contenido.',
-      featuredExperiences: 'Experiencias Destacadas',
-      featuredSubtitle: 'Descubre las experiencias mejor valoradas',
+      recentAddedExperiences: 'Experiencias Recien Añadidas',
+      recentAddedSubtittle: 'Descubre las experiencias más recientes de nuestro sitio',
       readyTitle: '¿Estás listo para vivir una experiencia inolvidable?',
       readySubtitle: 'Vive el territorio a través de quienes lo cuidan, reserva de forma segura, deja tu huella y sé parte de un turismo que respeta, empodera y protege la cultura y la naturaleza.',
       joinNow: 'Forma parte ahora!'

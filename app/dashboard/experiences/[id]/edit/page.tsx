@@ -30,8 +30,9 @@ interface Experience {
   status: string
 }
 
-export default function EditExperiencePage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params)
+export default function EditExperiencePage({ params }: { params: { id: string } }) {
+  const { id } = params; // Extract the ID here
+
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [experience, setExperience] = useState<Experience | null>(null)
@@ -76,14 +77,15 @@ export default function EditExperiencePage({ params }: { params: Promise<{ id: s
         const { data: experienceData, error: experienceError } = await supabase
           .from('experiences')
           .select('*')
-          .eq('id', resolvedParams.id)
-          .eq('host_id', userData.user.id) // Ensure user owns this experience
+          .eq('id', id) // Use the destructured 'id' here
+          .eq('host_id', userData.user.id)
           .single()
 
-        if (experienceError) {
-          console.error('Experience error:', experienceError)
-          setError('Experiencia no encontrada o no tienes permisos para editarla')
-          return
+        if (experienceError || !experienceData) { 
+          console.error('Experience not found or access denied:', experienceError);
+          setError('Experiencia no encontrada o no tienes permisos para editarla.');
+          setLoading(false); 
+          return;
         }
 
         setExperience(experienceData)
@@ -96,7 +98,7 @@ export default function EditExperiencePage({ params }: { params: Promise<{ id: s
           max_participants: experienceData.max_participants,
           price_per_person: experienceData.price_per_person,
           requirements: experienceData.requirements || ''
-        })
+        });
         setIncludedItems(experienceData.included_items || [''])
         setImages(experienceData.images || [''])
 
@@ -104,14 +106,21 @@ export default function EditExperiencePage({ params }: { params: Promise<{ id: s
         console.error('Error loading data:', error)
         setError('Error al cargar la experiencia')
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
     
-    loadData()
-  }, [router, resolvedParams.id])
+    if (id) { // Use the destructured 'id' here
+        loadData();
+    } else {
+      setLoading(false);
+      setError("No se proporcionó un ID de experiencia.");
+    }
+
+  }, [router, id]); // Use 'id' in the dependency array
 
   const validateForm = () => {
+    // ... (rest of the function is unchanged)
     if (!formData.title.trim()) {
       setError('El título es requerido')
       return false
@@ -152,7 +161,6 @@ export default function EditExperiencePage({ params }: { params: Promise<{ id: s
     try {
       const supabase = createClient()
       
-      // Filter out empty items and images
       const filteredItems = includedItems.filter(item => item.trim() !== '')
       const filteredImages = images.filter(img => img.trim() !== '')
 
@@ -173,7 +181,7 @@ export default function EditExperiencePage({ params }: { params: Promise<{ id: s
       const { error: updateError } = await supabase
         .from('experiences')
         .update(updateData)
-        .eq('id', resolvedParams.id)
+        .eq('id', id) // Use the destructured 'id' here
         .eq('host_id', user.id)
 
       if (updateError) {
