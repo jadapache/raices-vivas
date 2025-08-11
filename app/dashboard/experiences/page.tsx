@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client'
 import { getCurrentUser } from '@/lib/auth'
 import Link from 'next/link'
 import Image from 'next/image'
+import NoSSR from '@/components/ui/no-ssr'
 
 interface Experience {
   id: string
@@ -250,7 +251,9 @@ export default function HostExperiencesPage() {
                       </div>
                       <div className="text-sm text-gray-600">
                         <p className="font-medium">Creada</p>
-                        <p>{new Date(experience.created_at).toLocaleDateString('es-ES')}</p>
+                        <NoSSR>
+                          <p>{new Date(experience.created_at).toLocaleDateString('es-ES')}</p>
+                        </NoSSR>
                       </div>
                     </div>
 

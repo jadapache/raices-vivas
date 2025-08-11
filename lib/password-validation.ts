@@ -1,80 +1,68 @@
-export interface PasswordStrength {
+export interface PasswordValidation {
+  isValid: boolean
   score: number
   feedback: string[]
-  isValid: boolean
 }
 
-export function validatePassword(password: string): PasswordStrength {
+export function validatePassword(password: string): PasswordValidation {
   const feedback: string[] = []
   let score = 0
 
   if (!password) {
     return {
+      isValid: false,
       score: 0,
-      feedback: [],
-      isValid: false
+      feedback: ['La contraseña es requerida']
     }
   }
 
   // Length check
-  if (password.length >= 8) {
-    score += 1
+  if (password.length < 8) {
+    feedback.push('Debe tener al menos 8 caracteres')
   } else {
-    feedback.push("La contraseña debe tener al menos 8 caracteres")
+    score += 1
   }
 
   // Uppercase check
-  if (/[A-Z]/.test(password)) {
-    score += 1
+  if (!/[A-Z]/.test(password)) {
+    feedback.push('Debe incluir al menos una letra mayúscula')
   } else {
-    feedback.push("Incluye al menos una letra mayúscula")
+    score += 1
   }
 
   // Lowercase check
-  if (/[a-z]/.test(password)) {
-    score += 1
+  if (!/[a-z]/.test(password)) {
+    feedback.push('Debe incluir al menos una letra minúscula')
   } else {
-    feedback.push("Incluye al menos una letra minúscula")
+    score += 1
   }
 
   // Number check
-  if (/\d/.test(password)) {
-    score += 1
+  if (!/\d/.test(password)) {
+    feedback.push('Debe incluir al menos un número')
   } else {
-    feedback.push("Incluye al menos un número")
+    score += 1
   }
 
   // Special character check
-  if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    score += 1
-  } else {
-    feedback.push("Incluye al menos un carácter especial")
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    feedback.push('Debe incluir al menos un carácter especial')
   }
+
+  // Additional length bonus
+  if (password.length >= 12) {
+    score += 1
+  }
+
+  const isValid = score >= 3 && password.length >= 8
 
   return {
-    score,
-    feedback,
-    isValid: score >= 4
+    isValid,
+    score: Math.min(score, 4),
+    feedback
   }
 }
 
-export function getPasswordStrengthText(score: number): string {
-  switch (score) {
-    case 0:
-    case 1:
-      return "Muy débil"
-    case 2:
-      return "Débil"
-    case 3:
-      return "Regular"
-    case 4:
-      return "Fuerte"
-    case 5:
-      return "Muy fuerte"
-    default:
-      return "Muy débil"
-  }
-}
 
 export function getPasswordStrengthColor(score: number): string {
   switch (score) {

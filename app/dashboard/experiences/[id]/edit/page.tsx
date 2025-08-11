@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -30,7 +30,8 @@ interface Experience {
   status: string
 }
 
-export default function EditExperiencePage({ params }: { params: { id: string } }) {
+export default function EditExperiencePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params)
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [experience, setExperience] = useState<Experience | null>(null)
@@ -75,7 +76,7 @@ export default function EditExperiencePage({ params }: { params: { id: string } 
         const { data: experienceData, error: experienceError } = await supabase
           .from('experiences')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', resolvedParams.id)
           .eq('host_id', userData.user.id) // Ensure user owns this experience
           .single()
 
@@ -108,7 +109,7 @@ export default function EditExperiencePage({ params }: { params: { id: string } 
     }
     
     loadData()
-  }, [router, params.id])
+  }, [router, resolvedParams.id])
 
   const validateForm = () => {
     if (!formData.title.trim()) {
@@ -172,7 +173,7 @@ export default function EditExperiencePage({ params }: { params: { id: string } 
       const { error: updateError } = await supabase
         .from('experiences')
         .update(updateData)
-        .eq('id', params.id)
+        .eq('id', resolvedParams.id)
         .eq('host_id', user.id)
 
       if (updateError) {

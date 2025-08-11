@@ -12,6 +12,7 @@ import { User, Mail, Phone, Building, Loader2, Lock, Bell } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
+import NoSSR from '@/components/ui/no-ssr'
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null)
@@ -220,7 +221,9 @@ export default function ProfilePage() {
                 )}
                 <div className="flex items-center space-x-2">
                   <User className="h-4 w-4 text-gray-400" />
-                  <span>Miembro desde {new Date(profile?.created_at).toLocaleDateString('es-ES')}</span>
+                  <NoSSR>
+                    <span>Miembro desde {new Date(profile?.created_at).toLocaleDateString('es-ES')}</span>
+                  </NoSSR>
                 </div>
               </div>
             </CardContent>
