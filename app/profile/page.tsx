@@ -4,29 +4,21 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { User, Mail, Phone, Building, Loader2, Lock, Bell } from 'lucide-react'
+import { User, Mail, Phone, Building, Loader2, Lock, Bell, Edit2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
 import NoSSR from '@/components/ui/no-ssr'
+import EditProfileForm from './edit-profile/page'
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [formData, setFormData] = useState({
-    full_name: '',
-    phone: '',
-    community_name: '',
-    avatar_url: ''
-  })
+  // Nuevo estado para controlar la visibilidad del formulario de edición.
+  const [isEditing, setIsEditing] = useState(false)
   const router = useRouter()
-  const { toast } = useToast()
 
   useEffect(() => {
     let mounted = true
@@ -60,12 +52,6 @@ export default function ProfilePage() {
         
         if (mounted) {
           setProfile(profile)
-          setFormData({
-            full_name: profile?.full_name || '',
-            phone: profile?.phone || '',
-            community_name: profile?.community_name || '',
-            avatar_url: profile?.avatar_url || ''
-          })
         }
       } catch (error) {
         console.error('Error loading user:', error)
@@ -83,49 +69,11 @@ export default function ProfilePage() {
     }
   }, [router])
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
-
-    const supabase = createClient()
-    
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        full_name: formData.full_name,
-        phone: formData.phone,
-        community_name: formData.community_name,
-        avatar_url: formData.avatar_url,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', user.id)
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar el perfil",
-        variant: "destructive"
-      })
-    } else {
-      toast({
-        title: "¡Éxito!",
-        description: "Perfil actualizado correctamente"
-      })
-      
-      // Reload profile data
-      const { data: updatedProfile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
-      
-      if (updatedProfile) {
-        setProfile(updatedProfile)
-      }
-    }
-    
-    setSaving(false)
-  }
+  // Función que se pasa al componente hijo para manejar el éxito del guardado.
+  const handleUpdateProfile = (updatedProfile: any) => {
+    setProfile(updatedProfile); // Actualiza el estado del perfil en el componente padre.
+    setIsEditing(false); // Oculta el formulario de edición.
+  };
 
   const getRoleBadge = (role: string) => {
     switch (role) {
@@ -180,117 +128,68 @@ export default function ProfilePage() {
         </div>
 
         <div className="space-y-6">
-          {/* Profile Overview */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Información de la Cuenta</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-4 mb-6">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} alt={profile?.full_name} />
-                  <AvatarFallback className="text-lg">
-                    {profile?.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="text-xl font-semibold">{profile?.full_name}</h3>
-                  <p className="text-gray-600">{user?.email}</p>
-                  <div className="mt-2">
-                    {getRoleBadge(profile?.role)}
+          {/* Muestra la vista del perfil o el formulario de edición condicionalmente */}
+          {!isEditing ? (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-lg font-semibold">Información de la Cuenta</CardTitle>
+                <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Editar Perfil
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-4 mb-6">
+                  <Avatar className="h-20 w-20">
+                    <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} alt={profile?.full_name} />
+                    <AvatarFallback className="text-lg">
+                      {profile?.full_name?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="text-xl font-semibold">{profile?.full_name}</h3>
+                    <p className="text-gray-600">{user?.email}</p>
+                    <div className="mt-2">
+                      {getRoleBadge(profile?.role)}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center space-x-2">
-                  <Mail className="h-4 w-4 text-gray-400" />
-                  <span>{user?.email}</span>
-                </div>
-                {profile?.phone && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center space-x-2">
-                    <Phone className="h-4 w-4 text-gray-400" />
-                    <span>{profile.phone}</span>
+                    <Mail className="h-4 w-4 text-gray-400" />
+                    <span>Correo electrónico {user?.email}</span>
                   </div>
-                )}
-                {profile?.community_name && (
+                  {profile?.phone && (
+                    <div className="flex items-center space-x-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span>{profile.phone}</span>
+                    </div>
+                  )}
+                  {profile?.community_name && (
+                    <div className="flex items-center space-x-2">
+                      <Building className="h-4 w-4 text-gray-400" />
+                      <span>{profile.community_name}</span>
+                    </div>
+                  )}
                   <div className="flex items-center space-x-2">
-                    <Building className="h-4 w-4 text-gray-400" />
-                    <span>{profile.community_name}</span>
+                    <User className="h-4 w-4 text-gray-400" />
+                    <NoSSR>
+                      <span>Miembro desde {new Date(profile?.created_at).toLocaleDateString('es-ES')}</span>
+                    </NoSSR>
                   </div>
-                )}
-                <div className="flex items-center space-x-2">
-                  <User className="h-4 w-4 text-gray-400" />
-                  <NoSSR>
-                    <span>Miembro desde {new Date(profile?.created_at).toLocaleDateString('es-ES')}</span>
-                  </NoSSR>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Edit Profile */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Editar Perfil</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSave} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="full_name">Nombre Completo</Label>
-                  <Input
-                    id="full_name"
-                    value={formData.full_name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                    placeholder="Tu nombre completo"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Teléfono</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="Tu número de teléfono"
-                  />
-                </div>
-
-                {profile?.role === 'host' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="community_name">Nombre de la Comunidad</Label>
-                    <Input
-                      id="community_name"
-                      value={formData.community_name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, community_name: e.target.value }))}
-                      placeholder="Nombre de tu comunidad"
-                    />
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="avatar_url">URL del Avatar</Label>
-                  <Input
-                    id="avatar_url"
-                    type="url"
-                    value={formData.avatar_url}
-                    onChange={(e) => setFormData(prev => ({ ...prev, avatar_url: e.target.value }))}
-                    placeholder="https://ejemplo.com/tu-avatar.jpg"
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <Button type="button" variant="outline" onClick={() => router.push('/dashboard')}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={saving}>
-                    {saving ? 'Guardando...' : 'Guardar Cambios'}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ) : (
+            // Si isEditing es true, muestra el formulario de edición.
+            <EditProfileForm
+              user={user}
+              profile={profile}
+              onSaveSuccess={handleUpdateProfile}
+              onCancel={() => setIsEditing(false)}
+            />
+          )}
 
           {/* Account Actions */}
           <Card>

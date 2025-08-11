@@ -13,6 +13,27 @@ export const translations = {
       logout: 'Cerrar Sesión'
     },
 
+    // Common
+    common: {
+      perPerson: 'Persona',
+      community: 'Comunidad',
+      loading: 'Cargando...',
+      duration: 'Hrs',
+      view: 'Ver',
+      description: 'Descripción',
+      host: 'Anfitrión',
+      by: 'Por',
+      access_denied_title: 'Acceso Denegado',
+      access_denied_description: 'No tienes permiso para acceder a esta página.',
+      max: 'Máximo',
+      save: 'Guardar',
+      cancel: 'Cancelar',
+      change: 'Cambiar',
+      configure: 'Configurar',
+      submit: 'Enviar',
+      languageToggle: 'EN',
+    },
+
     // Home page
     home: {
       heroTitle: 'Descubre experiencias sorprendentes en el corazón del piedemonte amazónico',
@@ -27,31 +48,59 @@ export const translations = {
       selfControlDesc: 'Gestión directa por parte de las comunidades',
       trust: 'Confianza',
       trustDesc: 'Siéntete tranquilo con las reseñas reales de viajeros y validación de contenido.',
-      recentAddedExperiences: 'Experiencias Recien Añadidas',
-      recentAddedSubtittle: 'Descubre las experiencias más recientes de nuestro sitio',
+      recentAddedExperiences: 'Experiencias Recién Añadidas',
+      recentAddedSubtitle: 'Descubre las experiencias más recientes de nuestro sitio',
       readyTitle: '¿Estás listo para vivir una experiencia inolvidable?',
       readySubtitle: 'Vive el territorio a través de quienes lo cuidan, reserva de forma segura, deja tu huella y sé parte de un turismo que respeta, empodera y protege la cultura y la naturaleza.',
       joinNow: 'Forma parte ahora!'
     },
     // Auth
     auth: {
-      welcome: 'Bienvenido a Raíces Vivas',
-      welcomeDesc: 'Inicia sesión en tu cuenta o crea una nueva',
-      signIn: 'Iniciar Sesión',
-      signUp: 'Registrarse',
-      email: 'Email',
-      password: 'Contraseña',
-      fullName: 'Nombre Completo',
-      enterEmail: 'Ingresa tu email',
-      enterPassword: 'Ingresa tu contraseña',
-      createPassword: 'Crea una contraseña',
-      enterFullName: 'Ingresa tu nombre completo',
-      userType: 'Tipo de Usuario',
-      communityName: 'Nombre de la Comunidad',
-      enterCommunityName: 'Ingresa el nombre de tu comunidad',
-      creatingAccount: 'Creando cuenta...',
-      signingIn: 'Iniciando sesión...',
-      createAccount: 'Crear Cuenta'
+     welcomeTitle: "Bienvenido a Raíces Vivas",
+    welcomeDescription: "Inicia sesión en tu cuenta o crea una nueva",
+    languageToggle: "EN",
+    signInTab: "Iniciar Sesión",
+    signUpTab: "Registrarse",
+    emailLabel: "Email",
+    passwordLabel: "Contraseña",
+    signInButton: "Iniciar Sesión",
+    signInLoading: "Iniciando sesión...",
+    showDemoCredentialsButton: "Mostrar Credenciales Demo",
+    hideDemoCredentialsButton: "Ocultar Credenciales Demo",
+    demoCredentialsTitle: "Credenciales de Demostración",
+    demoCredentialsDescription: "Usa estas cuentas para probar la demo.",
+    copyButton: "Copiar",
+    loadCredentialsButton: "Cargar en formulario",
+    copiedToastTitle: "Copiado",
+    copiedToastDescription: "Credencial copiada al portapapeles.",
+    copyErrorToastTitle: "Error",
+    copyErrorToastDescription: "No se pudo copiar la credencial.",
+    loadedCredentialsToastTitle: "Credenciales cargadas",
+    loadedCredentialsToastDescription: "El email y la contraseña se han cargado en el formulario.",
+    allFieldsRequiredError: "Por favor, completa todos los campos requeridos.",
+    passwordValidationError: "La contraseña no cumple con los requisitos de seguridad.",
+    hostCommunityNameRequiredError: "Los anfitriones deben proporcionar el nombre de su comunidad.",
+    accountCreationError: "Error al crear la cuenta.",
+    emailAlreadyRegisteredError: "Este email ya está registrado.",
+    invalidEmailError: "Email inválido.",
+    weakPasswordError: "La contraseña es muy débil.",
+    databaseError: "Error de base de datos. Por favor, intenta de nuevo.",
+    unexpectedSignupError: "Error inesperado al crear la cuenta. Por favor, intenta de nuevo.",
+    accountCreatedInfo: "¡Cuenta creada! Por favor, verifica tu email para activarla.",
+    accountCreatedSuccess: "¡Cuenta creada exitosamente! Redirigiendo...",
+    welcomeSuccess: "¡Bienvenido! Redirigiendo al panel de control...",
+    signInError: "Error al iniciar sesión.",
+    invalidCredentialsError: "Email o contraseña incorrectos.",
+    emailNotConfirmedError: "Por favor verifica tu email antes de iniciar sesión.",
+    tooManyRequestsError: "Demasiados intentos. Espera un momento antes de intentar de nuevo.",
+    unexpectedSignInError: "Error inesperado al iniciar sesión. Por favor intenta de nuevo.",
+    fullNameLabel: "Nombre Completo *",
+    communityNameLabel: "Nombre de la Comunidad *",
+    signUpButton: "Crear Cuenta",
+    signUpLoading: "Creando cuenta...",
+    hostRole: "Anfitrión",
+    coordinatorRole: "Coordinador",
+    touristRole: "Turista",
     },
     // User roles
     roles: {
@@ -74,8 +123,11 @@ export const translations = {
       filterByStatus: 'Filtrar por estado',
       allStatus: 'Todos los estados',
       pending: 'Pendientes',
+      onlyPending: 'Pendiente',
       approved: 'Aprobadas',
+      onlyApproved: 'Aprobada',
       rejected: 'Rechazadas',
+      onlyRejected: 'Rechazada',
       noExperiences: 'No tienes experiencias aún',
       noExperiencesDesc: '¡Crea tu primera experiencia y compártela con visitantes!',
       createFirst: 'Crear Primera Experiencia',
@@ -84,12 +136,39 @@ export const translations = {
       participants: 'Participantes',
       created: 'Creada',
       coordinatorNotes: 'Notas del coordinador:',
+      confirmedBookings: 'Confirmadas',
       status: 'Estado',
       inReview: 'En revisión',
       published: 'Publicada',
       view: 'Ver',
       edit: 'Editar',
-      viewPublic: 'Ver Público'
+      viewPublic: 'Ver Público',
+      total: 'En Total',
+      totalExperiences: 'Total de Experiencias',
+      totalRevenue: 'Ingresos Totales',
+      totalBookings: 'Total de Reservas',
+      totalSpent: 'Total Gastado',
+      recentBookings: 'Reservas Recientes',
+      manageBookings: 'Gestionar Reservas',
+      noBookings: 'Sin reservas',
+      hostPanel: 'Panel de Anfitrión',
+      experience_list_title: 'Experiencias para Revisar',
+      experience_list_description: 'Revisa y aprueba experiencias enviadas por anfitriones.',
+      no_experiences: 'No hay experiencias disponibles.',
+      coordSubtitle: 'Revisa y gestiona experiencias',
+      touriSubtitle: 'Explora y reserva experiencias',
+      my_bookings_title: 'Mis Reservas',
+      my_bookings_subtitle: 'Gestiona tus reservas de experiencias',
+      my_bookings_viewall: 'Ver todas las reservas',
+      my_bookings_empty: 'No tienes reservas en este momento.',
+      my_bookings_explore: 'Explorar experiencias',
+      quick_actions_title: 'Acciones Rápidas',
+      quick_actions_explore: 'Explorar experiencias',
+      quick_actions_manage_bookings: 'Gestionar mis reservas',
+      quick_actions_view_profile: 'Ver mi perfil',
+      tour_recent_actions: 'Acciones Recientes',
+      tour_recent_no_actions: 'No hay acciones recientes',
+      tour_recent_booked: 'Reservas Recientes',
     },
     // Experiences
     experiences: {
@@ -157,6 +236,16 @@ export const translations = {
       coordinator: 'Coordinador',
       tourist: 'Visitante'
     },
+    // Role Selector
+    roleselector:{
+      userTypeLabel: "Tipo de Usuario",
+      touristLabel: "Visitante",
+      touristDescription: "Explora experiencias",
+      hostLabel: "Anfitrión",
+      hostDescription: "Crea experiencias",
+      coordinatorLabel: "Coordinador",
+      coordinatorDescription: "Revisa experiencias"
+    },
     // Booking
     booking: {
       title: 'Reservar Experiencia',
@@ -218,6 +307,16 @@ export const translations = {
       success: '¡Éxito!'
     },
 
+    // Errors
+    errors: {
+      sessionError: 'Error al cerrar la sesión',
+      generic: 'Ha ocurrido un error. Por favor, intenta de nuevo más tarde.',
+      notFound: 'No se encontró el recurso solicitado.',
+      unauthorized: 'No estás autorizado para realizar esta acción.',
+      forbidden: 'Acceso denegado.',
+      validation: 'Error de validación. Por favor, revisa los campos e intenta de nuevo.'
+    },
+
     // Footer
     footer: {
       description: 'Conectando culturas a través del turismo comunitario sostenible en el piedemonte amazónico.',
@@ -234,27 +333,6 @@ export const translations = {
   },
 
   en: {
-    // Home
-    home: {
-      heroTitle: 'Explore, Connect and Transform',
-      heroSubtitle: 'Discover authentic experiences through sustainable community tourism',
-      exploreExperiences: 'Explore Experiences',
-      joinUs: 'Join Us',
-      valueProposition: 'Why Choose Raíces Vivas?',
-      valueSubtitle: 'We connect you with authentic communities in the Amazon foothills',
-      accessible: 'Accessible',
-      accessibleDesc: 'Experiences designed for everyone, regardless of their level of adventure.',
-      selfControl: 'Self-Management',
-      selfControlDesc: 'Communities manage their own experiences, ensuring authenticity.',
-      trust: 'Trust',
-      trustDesc: 'Verified experiences and hosts for your peace of mind.',
-      featuredExperiences: 'Featured Experiences',
-      featuredSubtitle: 'Discover the most popular experiences in our communities',
-      readyTitle: 'Ready for an Authentic Adventure?',
-      readySubtitle: 'Join our community and start exploring unique experiences today',
-      joinNow: 'Join Now'
-    },
-
     // Navigation
     nav: {
       home: 'Home',
@@ -268,6 +346,162 @@ export const translations = {
       logout: 'Logout'
     },
 
+    // Common
+    common: {
+      perPerson: 'Person',
+      community: 'Community',
+      loading: 'Loading...',
+      duration: 'Hrs',
+      view: 'View',
+      description: 'Description',
+      host: 'Host',
+      by: 'By',
+      access_denied_title: 'Access Denied',
+      access_denied_description: 'You do not have permission to access this page.',
+      max: 'Max',
+      save: 'Save',
+      cancel: 'Cancel',
+      change: 'Change',
+      configure: 'Configure',
+      submit: 'Submit',
+      languageToggle: 'ES',
+    },
+
+    // Home page
+    home: {
+      heroTitle: 'Discover amazing experiences in the heart of the Amazon foothills',
+      heroSubtitle: 'Unique community tourism offers created and managed by indigenous and peasant communities in Caquetá and Putumayo.',
+      exploreExperiences: 'Explore Experiences',
+      joinUs: 'I want to be part of it',
+      valueProposition: 'What is our value proposition?',
+      valueSubtitle: 'We connect travelers with authentic local experiences while supporting community tourism',
+      accessible: 'Accessible',
+      accessibleDesc: 'Access from areas with low connectivity',
+      selfControl: 'Self-Control',
+      selfControlDesc: 'Direct management by the communities',
+      trust: 'Trust',
+      trustDesc: 'Feel at ease with real traveler reviews and content validation.',
+      recentAddedExperiences: 'Recently Added Experiences',
+      recentAddedSubtitle: 'Discover the most recent experiences on our site',
+      readyTitle: 'Are you ready to live an unforgettable experience?',
+      readySubtitle: 'Live the territory through those who care for it, book safely, leave your mark and be part of a tourism that respects, empowers and protects culture and nature.',
+      joinNow: 'Be a part of it now!'
+    },
+    // Auth
+    auth: {
+    welcomeTitle: "Welcome to Raíces Vivas",
+    welcomeDescription: "Sign in to your account or create a new one",
+    languageToggle: "ES",
+    signInTab: "Sign In",
+    signUpTab: "Sign Up",
+    emailLabel: "Email",
+    passwordLabel: "Password",
+    signInButton: "Sign In",
+    signInLoading: "Signing in...",
+    showDemoCredentialsButton: "Show Demo Credentials",
+    hideDemoCredentialsButton: "Hide Demo Credentials",
+    demoCredentialsTitle: "Demo Credentials",
+    demoCredentialsDescription: "Use these accounts to try the demo.",
+    copyButton: "Copy",
+    loadCredentialsButton: "Load into form",
+    copiedToastTitle: "Copied",
+    copiedToastDescription: "Credential copied to clipboard.",
+    copyErrorToastTitle: "Error",
+    copyErrorToastDescription: "Failed to copy credential.",
+    loadedCredentialsToastTitle: "Credentials loaded",
+    loadedCredentialsToastDescription: "Email and password have been loaded into the form.",
+    allFieldsRequiredError: "Please fill out all required fields.",
+    passwordValidationError: "Password does not meet security requirements.",
+    hostCommunityNameRequiredError: "Hosts must provide their community name.",
+    accountCreationError: "Error creating account.",
+    emailAlreadyRegisteredError: "This email is already registered.",
+    invalidEmailError: "Invalid email.",
+    weakPasswordError: "Password is too weak.",
+    databaseError: "Database error. Please try again.",
+    unexpectedSignupError: "Unexpected error creating account. Please try again.",
+    accountCreatedInfo: "Account created! Please verify your email to activate it.",
+    accountCreatedSuccess: "Account created successfully! Redirecting...",
+    welcomeSuccess: "Welcome! Redirecting to the dashboard...",
+    signInError: "Sign-in error.",
+    invalidCredentialsError: "Incorrect email or password.",
+    emailNotConfirmedError: "Please verify your email before signing in.",
+    tooManyRequestsError: "Too many attempts. Please wait a moment before trying again.",
+    unexpectedSignInError: "Unexpected sign-in error. Please try again.",
+    fullNameLabel: "Full Name *",
+    communityNameLabel: "Community Name *",
+    signUpButton: "Create Account",
+    signUpLoading: "Creating account...",
+    hostRole: "Host",
+    coordinatorRole: "Coordinator",
+    touristRole: "Tourist",
+    },
+    // User roles
+    roles: {
+      tourist: 'Tourist',
+      touristDesc: 'Explore experiences',
+      host: 'Host',
+      hostDesc: 'Create experiences',
+      coordinator: 'Coordinator',
+      coordinatorDesc: 'Review experiences'
+    },
+    // Dashboard
+    dashboard: {
+      title: 'Dashboard',
+      welcome: 'Welcome back',
+      myExperiences: 'My Experiences',
+      manageExperiences: 'Manage all your published experiences',
+      newExperience: 'New Experience',
+      backToDashboard: 'Back to Dashboard',
+      search: 'Search experiences...',
+      filterByStatus: 'Filter by status',
+      allStatus: 'All statuses',
+      pending: 'Pending',
+      onlyPending: 'Pending',
+      approved: 'Approved',
+      rejected: 'Rejected',
+      onlyRejected: 'Rejected',
+      noExperiences: 'You have no experiences yet',
+      noExperiencesDesc: 'Create your first experience and share it with visitors!',
+      createFirst: 'Create First Experience',
+      price: 'Price',
+      duration: 'Duration',
+      participants: 'Participants',
+      created: 'Created',
+      coordinatorNotes: 'Coordinator notes:',
+      confirmedBookings: 'Confirmed Bookings',
+      status: 'Status',
+      inReview: 'Under review',
+      published: 'Published',
+      view: 'View',
+      edit: 'Edit',
+      viewPublic: 'View Public',
+      total: 'In Total',
+      totalExperiences: 'Total Experiences',
+      totalRevenue: 'Total Revenue',
+      totalBookings: 'Total Bookings',
+      totalSpent: 'Total Spent',
+      recentBookings: 'Recent Bookings',
+      manageBookings: 'Manage Bookings',
+      noBookings: 'No bookings',
+      hostPanel: 'Host Panel',
+      experience_list_title: 'Experiences to Review',
+      experience_list_description: 'Review and approve experiences submitted by hosts.',
+      no_experiences: 'No experiences available.',
+      coordSubtitle: 'Review and manage experiences',
+      touriSubtitle: 'Explore and book experiences',
+      my_bookings_title: 'My Bookings',
+      my_bookings_subtitle: 'Manage your experience bookings',
+      my_bookings_viewall: 'View all bookings',
+      my_bookings_empty: 'You have no bookings at the moment.',
+      my_bookings_explore: 'Explore experiences',
+      quick_actions_title: 'Quick Actions',
+      quick_actions_explore: 'Explore experiences',
+      quick_actions_manage_bookings: 'Manage my bookings',
+      quick_actions_view_profile: 'View my profile',
+      tour_recent_actions: 'Recent Actions',
+      tour_recent_no_actions: 'No recent actions',
+      tour_recent_booked: 'Recent Bookings',
+    },
     // Experiences
     experiences: {
       title: 'Discover Unique Experiences',
@@ -301,7 +535,7 @@ export const translations = {
       save: 'Save',
       saved: 'Saved',
       participants: 'Participants',
-      maxParticipants: 'Max {{count}}',
+      maxParticipants: 'Max. {{count}}',
       hour: 'hour',
       hours: 'hours',
       available: 'Available',
@@ -309,37 +543,16 @@ export const translations = {
       experiencesFound: 'experiences found',
       by: 'by'
     },
-
-    // Dashboard
-    dashboard: {
-      title: 'Dashboard',
-      welcome: 'Welcome back',
-      myExperiences: 'My Experiences',
-      manageExperiences: 'Manage all your published experiences',
-      newExperience: 'New Experience',
-      backToDashboard: 'Back to Dashboard',
-      search: 'Search experiences...',
-      filterByStatus: 'Filter by status',
-      allStatus: 'All statuses',
-      pending: 'Pending',
-      approved: 'Approved',
-      rejected: 'Rejected',
-      noExperiences: 'You have no experiences yet',
-      noExperiencesDesc: 'Create your first experience and share it with visitors!',
-      createFirst: 'Create First Experience',
-      price: 'Price',
-      duration: 'Duration',
-      participants: 'Participants',
-      created: 'Created',
-      coordinatorNotes: 'Coordinator notes:',
-      status: 'Status',
-      inReview: 'Under review',
-      published: 'Published',
-      view: 'View',
-      edit: 'Edit',
-      viewPublic: 'View Public'
+     // Role Selector
+    roleselector:{
+      userTypeLabel: "User Type",
+      touristLabel: "Tourist",
+      touristDescription: "Explore experiences",
+      hostLabel: "Host",
+      hostDescription: "Create experiences",
+      coordinatorLabel: "Coordinator",
+      coordinatorDescription: "Review experiences"
     },
-
     // Profile
     profile: {
       title: 'My Profile',
@@ -365,7 +578,6 @@ export const translations = {
       coordinator: 'Coordinator',
       tourist: 'Tourist'
     },
-
     // Booking
     booking: {
       title: 'Book Experience',
@@ -393,7 +605,6 @@ export const translations = {
       exploreMore: 'Explore more experiences',
       notCharged: 'You won\'t be charged at this time'
     },
-
     // Notifications
     notifications: {
       title: 'Notification Settings',
@@ -414,7 +625,6 @@ export const translations = {
       marketingEmailsDesc: 'Receive information about new experiences and special offers',
       saveSettings: 'Save Settings'
     },
-
     // Forms
     forms: {
       required: 'Required',
@@ -426,7 +636,15 @@ export const translations = {
       error: 'Error',
       success: 'Success!'
     },
-
+    // Errors
+    errors: {
+      sessionError: 'Logout error',
+      generic: 'An error has occurred. Please try again later.',
+      notFound: 'The requested resource was not found.',
+      unauthorized: 'You are not authorized to perform this action.',
+      forbidden: 'Access denied.',
+      validation: 'Validation error. Please check the fields and try again.'
+    },
     // Footer
     footer: {
       description: 'Connecting cultures through sustainable community tourism in the Amazon foothills.',
